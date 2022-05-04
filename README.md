@@ -5,6 +5,8 @@ While I have been given permission to post it by the creator who made it on my b
 
 ---
 
+
+
 ## What is Squeak?
 
 Squeak is a tool made by VRChat user and awesome human Gongo that bridges the gap between level editing in Blender to Unity by providing a way to procedurally instance prefabs and other GameObjects based on the instances or triangles that make up a mesh asset.
@@ -12,7 +14,7 @@ Squeak is a tool made by VRChat user and awesome human Gongo that bridges the ga
 Drag a mesh asset into the Hierarchy, add Squeak, tweak a few settings and you're done!
 
 
-#### Features
+### Features
 
 * Use either Instances or right angle triangle faces to generate prefab instances
 * Provide multiple prefabs and Squeak will randomly pick from the list as it instances
@@ -20,11 +22,13 @@ Drag a mesh asset into the Hierarchy, add Squeak, tweak a few settings and you'r
 * If you're using Instances, you can target objects with specific names in the file as well as what transform data is used when instancing.
 * If you're using Face mode, it can create tens of thousands of instances quickly.
 
-#### Installation Instructions
+### Installation Instructions
 
 * Unzip the folder.
 * Drag the folder anywhere in your project.
 * Right-click a GameObject in the hierarchy and select, "Squeak" to start using it.
+
+
 
 
 ## Why Though?
