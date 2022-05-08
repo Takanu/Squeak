@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Gongo.Squeak.Editor
+namespace Gongo.EmptyReplacement.Editor
 {
     public class EmptyAssetPostProcessor : AssetPostprocessor
     {
@@ -10,7 +10,7 @@ namespace Gongo.Squeak.Editor
             string[] movedFromAssetPaths)
         {
             var metaContainers =
-                Resources.FindObjectsOfTypeAll(typeof(SqueakMetaContainer)) as SqueakMetaContainer[];
+                Resources.FindObjectsOfTypeAll(typeof(EmptyReplacementMetaContainer)) as EmptyReplacementMetaContainer[];
             if(metaContainers == null) return;
             
             // metaContainers contain ALL metaContainers, including ones that are in the Project and not the Scne
@@ -45,14 +45,14 @@ namespace Gongo.Squeak.Editor
 
     public class OneUpdateWaiter
     {
-        public SqueakMetaContainer MetaContainer;
+        public EmptyReplacementMetaContainer MetaContainer;
         public void Update()
         {
             var meta = MetaContainer.meta;
-            if (meta != null && meta.UpdateOnReload && meta.LastExportedObject != null && (meta.HasRedo || meta.ReplacementMode == SqueakMode.FACE ))
+            if (meta != null && meta.UpdateOnReload && meta.LastExportedObject != null && (meta.HasRedo || meta.ReplacementMode == EmptyReplacementMode.FACE ))
             {
                                 
-                SqueakMetaContainerEditor.AttemptRedo(MetaContainer);
+                EmptyReplacementMetaContainerEditor.AttemptRedo(MetaContainer);
                 Debug.Log("Auto reloading " + MetaContainer.name);
             }
             EditorApplication.update -= Update;

@@ -2,12 +2,12 @@
 using System;
 using UnityEngine;
 
-namespace Gongo.Squeak
+namespace Gongo.EmptyReplacement
 {
     [Serializable]
-    public class SqueakMeta : ScriptableObject
+    public class EmptyReplacementMeta : ScriptableObject
     {
-        public SqueakMode ReplacementMode;
+        public EmptyReplacementMode ReplacementMode;
 
         public string OutputName;
         public string StartsWithMatch;
@@ -20,26 +20,26 @@ namespace Gongo.Squeak
         
         public bool CopyName, CopyAngles, CopyScale, HasRedo;
 
-        public SqueakMeta Clone()
+        public EmptyReplacementMeta Clone()
         {
             return Instantiate(this);
         }
 
-        public static SqueakMeta Create()
+        public static EmptyReplacementMeta Create()
         {
-            var meta = CreateInstance<SqueakMeta>();
+            var meta = CreateInstance<EmptyReplacementMeta>();
             meta.CopyName = true;
             meta.CopyAngles = true;
             meta.CopyScale = true;
             meta.PrefabList = Array.Empty<GameObject>();
-            meta.ReplacementMode = SqueakMode.INSTANCE;
+            meta.ReplacementMode = EmptyReplacementMode.INSTANCE;
             meta.OutputName = "Prefab";
 
             return meta;
         }
     }
 
-    public enum SqueakMode
+    public enum EmptyReplacementMode
     {
         // instance = replace all GameObject instances matching a certain name with prefabs
         // vertex = replace all mesh faces with prefabs 

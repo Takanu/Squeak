@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace Gongo.Squeak.Editor
+namespace Gongo.EmptyReplacement.Editor
 {
 
     public static class Language
@@ -31,13 +31,13 @@ namespace Gongo.Squeak.Editor
             new GUIContent("Copy Rotation", "Copies Rotation from original transform");
     }
     
-    [CustomEditor(typeof(SqueakMetaContainer))]
-    public class SqueakMetaContainerEditor : UnityEditor.Editor
+    [CustomEditor(typeof(EmptyReplacementMetaContainer))]
+    public class EmptyReplacementMetaContainerEditor : UnityEditor.Editor
     {
-        private SqueakMetaContainer _container;
+        private EmptyReplacementMetaContainer _container;
         
 
-        [MenuItem("GameObject/Squeak", false, -100)]
+        [MenuItem("GameObject/Blender Empty Replace", false, -100)]
         static void OnSelectObject()
         {
             DoOpen(Selection.activeGameObject);
@@ -52,19 +52,19 @@ namespace Gongo.Squeak.Editor
                 return;
             }
 
-            if (target.GetComponent<SqueakMetaContainer>() == null)
+            if (target.GetComponent<EmptyReplacementMetaContainer>() == null)
             {
-                var container = target.AddComponent<SqueakMetaContainer>();
-                container.meta = SqueakMeta.Create();
+                var container = target.AddComponent<EmptyReplacementMetaContainer>();
+                container.meta = EmptyReplacementMeta.Create();
             }
 
             Selection.activeGameObject = target;
         }
         
-        public static void AttemptRedo(SqueakMetaContainer metaContainer)
+        public static void AttemptRedo(EmptyReplacementMetaContainer metaContainer)
         {
             var meta = metaContainer.meta;
-            if (meta.ReplacementMode == SqueakMode.FACE)
+            if (meta.ReplacementMode == EmptyReplacementMode.FACE)
             {
                 var filter = metaContainer.GetComponent<MeshFilter>();
                 if(filter != null && filter.sharedMesh != null) DoFaceInstantiates(metaContainer, filter.sharedMesh);
@@ -77,10 +77,10 @@ namespace Gongo.Squeak.Editor
 
         public override void OnInspectorGUI()
         {
-            EditorGUILayout.LabelField("Prefab Instancer", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Blender Empty Replacer", EditorStyles.boldLabel);
             if (_container == null)
             {
-                _container = (SqueakMetaContainer)target;
+                _container = (EmptyReplacementMetaContainer)target;
             }
 
             if (_container.meta == null)
@@ -93,7 +93,7 @@ namespace Gongo.Squeak.Editor
 
             meta.UpdateOnReload = EditorGUILayout.Toggle(Language.AUTOUPDATE_CONTENT, meta.UpdateOnReload);
 
-            if (meta.UpdateOnReload && (meta.LastExportedObject == null || (!meta.HasRedo && meta.ReplacementMode == SqueakMode.INSTANCE)))
+            if (meta.UpdateOnReload && (meta.LastExportedObject == null || (!meta.HasRedo && meta.ReplacementMode == EmptyReplacementMode.INSTANCE)))
             {
                 var unavailableReason = meta.LastExportedObject == null ? "Unknown last exported object" : "Need to do 1 replacement first";
                 EditorGUILayout.HelpBox(new GUIContent($"Auto Update Unavailable: {unavailableReason}"));
@@ -117,8 +117,8 @@ namespace Gongo.Squeak.Editor
             using (new EditorGUI.DisabledGroupScope(_container.HasFoundReplacables))
             {
                 EditorGUI.BeginChangeCheck();
-                meta.ReplacementMode = (SqueakMode) EditorGUILayout.EnumPopup("Replacement Mode", meta.ReplacementMode);
-                if (meta.ReplacementMode == SqueakMode.INSTANCE)
+                meta.ReplacementMode = (EmptyReplacementMode) EditorGUILayout.EnumPopup("Replace Mode", meta.ReplacementMode);
+                if (meta.ReplacementMode == EmptyReplacementMode.INSTANCE)
                 {
                     meta.StartsWithMatch =
                         EditorGUILayout.TextField(Language.STARTS_WITH_NAME_CONTENT, meta.StartsWithMatch);
@@ -133,10 +133,10 @@ namespace Gongo.Squeak.Editor
             MeshFilter filter = null;
 
             string error = null;
-            if (string.IsNullOrEmpty(meta.StartsWithMatch) && meta.ReplacementMode == SqueakMode.INSTANCE)
+            if (string.IsNullOrEmpty(meta.StartsWithMatch) && meta.ReplacementMode == EmptyReplacementMode.INSTANCE)
             {
                 error = "Missing \"Starts with matcher\"";
-            } else if (meta.ReplacementMode == SqueakMode.FACE &&
+            } else if (meta.ReplacementMode == EmptyReplacementMode.FACE &&
                 ((filter = _container.GetComponent<MeshFilter>()) == null || filter.sharedMesh == null))
             {
                 error = "Missing valid mesh on target";
@@ -154,14 +154,14 @@ namespace Gongo.Squeak.Editor
 
             using (new EditorGUI.DisabledGroupScope(error != null))
             {
-                if (meta.ReplacementMode == SqueakMode.INSTANCE)
+                if (meta.ReplacementMode == EmptyReplacementMode.INSTANCE)
                 {
                     var newError = RenderInstanceReplace();
                     if (newError != null)
                     {
                         error = newError;
                     }
-                } else if (meta.ReplacementMode == SqueakMode.FACE)
+                } else if (meta.ReplacementMode == EmptyReplacementMode.FACE)
                 {
                     RenderFaceReplace(filter);
                 }
@@ -189,7 +189,7 @@ namespace Gongo.Squeak.Editor
             }
         }
 
-        private static void DoFaceInstantiates(SqueakMetaContainer container, Mesh mesh)
+        private static void DoFaceInstantiates(EmptyReplacementMetaContainer container, Mesh mesh)
         {
             var baseTransform = CreateBaseObject(container);
             var triangles = mesh.triangles;
@@ -361,7 +361,7 @@ namespace Gongo.Squeak.Editor
             FindToReplace(_container);
         }
         
-        private static void FindToReplace(SqueakMetaContainer container)
+        private static void FindToReplace(EmptyReplacementMetaContainer container)
         {
             //var rootIsPrefab = PrefabUtility.IsPartOfAnyPrefab(_targetObject);
             container.foundToReplace = container.gameObject.GetComponentsInChildren<Transform>(true)
@@ -388,7 +388,7 @@ namespace Gongo.Squeak.Editor
             container.triedToFind = true;
         }
 
-        private static void CopyTransforms(SqueakMeta meta, Transform targetTransform, Transform copySource)
+        private static void CopyTransforms(EmptyReplacementMeta meta, Transform targetTransform, Transform copySource)
         {
             targetTransform.localPosition = copySource.localPosition;
                 
@@ -402,7 +402,7 @@ namespace Gongo.Squeak.Editor
             DoReplacements(_container);
         }
 
-        private static Transform CreateBaseObject(SqueakMetaContainer container)
+        private static Transform CreateBaseObject(EmptyReplacementMetaContainer container)
         {
             if (container.meta.LastExportedObject != null)
             {
@@ -415,12 +415,12 @@ namespace Gongo.Squeak.Editor
             var newObjTransform = newObj.transform;
             CopyTransforms(container.meta, newObjTransform, container.transform);
                 
-            newObjTransform.name = container.name + "_Squeak";
+            newObjTransform.name = container.name + "_EmptyReplace";
 
             return newObjTransform;
         }
 
-        private static void DoReplacements(SqueakMetaContainer container)
+        private static void DoReplacements(EmptyReplacementMetaContainer container)
         {
             var prefabMode = PrefabUtility.IsPartOfAnyPrefab(container.gameObject);
             var transformOrigin = container.transform;
@@ -494,7 +494,7 @@ namespace Gongo.Squeak.Editor
         }
         // public override void OnInspectorGUI()
         // {
-        //     var metaContainer = ((SqueakMetaContainer)target);
+        //     var metaContainer = ((EmptyReplacementMetaContainer)target);
         //     var so = new SerializedObject(metaContainer);
         //     EditorGUILayout.PropertyField(so.FindProperty(nameof(metaContainer.meta)), true);
         //
@@ -505,7 +505,7 @@ namespace Gongo.Squeak.Editor
         //         if (GUILayout.Button("Create Asset"))
         //         {
         //             Undo.RegisterCompleteObjectUndo(metaContainer, "Updating meta");
-        //             metaContainer.meta = SqueakMeta.Create();
+        //             metaContainer.meta = EmptyReplacementMeta.Create();
         //         }
         //         return;
         //     }
@@ -515,7 +515,7 @@ namespace Gongo.Squeak.Editor
         //     GUILayout.BeginHorizontal();
         //     
         //     // show an "open" button that'll be a shortcut to open the Editor Window
-        //     if (GUILayout.Button("Open Empty Replacer")) SqueakEditor.DoOpen(metaContainer.gameObject);
+        //     if (GUILayout.Button("Open Empty Replacer")) EmptyReplacementEditor.DoOpen(metaContainer.gameObject);
         //     if (metaContainer.meta.HasRedo && GUILayout.Button("Redo Replacements"))
         //     {
         //         
@@ -525,7 +525,7 @@ namespace Gongo.Squeak.Editor
         //     if (!assetFileExists && GUILayout.Button("Export Asset"))
         //     {
         //         var fileName = $"{DateTimeOffset.Now.ToUnixTimeMilliseconds()}_Meta.asset";
-        //         var path = EditorUtility.SaveFilePanel("Save meta for Squeak",
+        //         var path = EditorUtility.SaveFilePanel("Save meta for EmptyReplacement",
         //             "Assets/",
         //             fileName,
         //             "asset"
@@ -541,9 +541,9 @@ namespace Gongo.Squeak.Editor
 
     public class PrefabSelector : EditorWindow
     {
-        private SqueakMetaContainer _metaContainer;
+        private EmptyReplacementMetaContainer _metaContainer;
 
-        public static void OpenPrefabSelector(SqueakMetaContainer metaContainer)
+        public static void OpenPrefabSelector(EmptyReplacementMetaContainer metaContainer)
         {
             var window = (PrefabSelector) GetWindow(typeof (PrefabSelector));
             window.autoRepaintOnSceneChange = true;

@@ -4,13 +4,13 @@ using UnityEditor;
 using UnityEngine;
 using Random = System.Random;
 
-namespace Gongo.Squeak
+namespace Gongo.EmptyReplacement
 {
-    public class SqueakMetaContainer : MonoBehaviour
+    public class EmptyReplacementMetaContainer : MonoBehaviour
     {
         private static readonly Random random = new Random();
         
-        public SqueakMeta meta;
+        public EmptyReplacementMeta meta;
         
         public Transform[] foundToReplace;
         public bool triedToFind;
