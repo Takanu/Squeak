@@ -192,6 +192,7 @@ namespace Squeak.Editor
         private static void DoFaceInstantiates(SqueakReplacementMetaContainer container, Mesh mesh)
         {
             var baseTransform = CreateBaseObject(container);
+            Debug.Log(baseTransform.position + " - " + baseTransform.rotation + " - " + baseTransform.localScale);
             var triangles = mesh.triangles;
             var vertices = mesh.vertices;
             var normals = mesh.normals;
@@ -200,27 +201,31 @@ namespace Squeak.Editor
             var originalRotation = trans.rotation;
             trans.position = Vector3.zero;
             trans.rotation = Quaternion.identity;
+
+            Debug.Log(trans.position + " - " + trans.rotation + " - " + trans.localScale);
             
             var beginTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             var displayedProgress = false;
             var matrix = new Matrix4x4();
             var vertPairs = new[] { new[]{ 1, 0, 2 }, new[]{ 2, 0, 1 }, new[]{ 1, 2, 0 } };
-           var verts = new Vector3[3];
+            var verts = new Vector3[3];
             
             for (var i = 0; i < triangles.Length; i += 3)
             {
-                var vert0 = trans.TransformPoint(vertices[triangles[i + 0]]);
-                var vert1 = trans.TransformPoint(vertices[triangles[i + 1]]);
-                var vert2 = trans.TransformPoint(vertices[triangles[i + 2]]);
+                var vert0 = vertices[triangles[i + 0]];
+                var vert1 = vertices[triangles[i + 1]];
+                var vert2 = vertices[triangles[i + 2]];
 
                 var norm0 = normals[triangles[i + 0]];
                 var norm1 = normals[triangles[i + 1]];
                 var norm2 = normals[triangles[i + 2]];
 
-                var guessedNormals = (norm0 + norm1 + norm2) / 3.0f;
-                guessedNormals.Normalize();
+                var combinedNormals = (norm0 + norm1 + norm2) / 3.0f;
+                combinedNormals.Normalize();
 
-                var faceNormal = (vert0 + vert1 + vert2) / 3.0f;
+                var facePosition = (vert0 + vert1 + vert2) / 3.0f;
+                Debug.Log("FACE POSITION: " + facePosition);
+                
 
                 if (i % 300 == 0) // modulus must be multiple of 3
                 {
@@ -252,13 +257,14 @@ namespace Squeak.Editor
                         // the vert pairs is [first index to check, second index to check, the odd one out]
                         var pairs = vertPairs[pairIndex];
                         var magnitude = (verts[pairs[0]] - verts[pairs[1]]).magnitude;
+
                         if (magnitude >= largestMagnitude)
                         {
                             largestPairIndex = pairIndex;
                             largestMagnitude = magnitude;
                         }
                     }
-
+            
                     var pair = vertPairs[largestPairIndex];
                     var largest0 = verts[pair[0]];
                     var largest1 = verts[pair[1]];
@@ -266,25 +272,20 @@ namespace Squeak.Editor
 
                     var unitVector0 = (largest0 - origin).normalized;
                     var unitVector1 = (largest1 - origin).normalized;
-                    var unitVector2 = guessedNormals;
-                    
-                    matrix.SetColumn(0, unitVector0);
-                    matrix.SetColumn(1, unitVector2);
-                    matrix.SetColumn(2, unitVector1);
-                    var prefTrans = prefabObj.transform;
-                    prefTrans.localPosition = faceNormal;
-                    var pos = prefTrans.position;
-                    
-                    matrix.SetColumn(3, new Vector4(pos.x, pos.y, pos.z, 1));
-                    
-                    if (matrix.ValidTRS())
-                    {
-                        prefTrans.rotation = matrix.rotation;
-                    }
+                    var unitVector2 = combinedNormals;
 
-                    prefTrans.name = container.meta.OutputName;
+                    // Using Quaternions is safer and faster.
+                    var quaternion = Quaternion.LookRotation(unitVector0, unitVector2);
+
+                    var prefabTrans = prefabObj.transform;
+                    prefabTrans.localPosition = facePosition;
+                    prefabTrans.rotation = quaternion;
+
+                    prefabTrans.name = container.meta.OutputName;
+                    
                 }
             }
+            
             trans.position = originalPos;
             trans.rotation = originalRotation;
 
