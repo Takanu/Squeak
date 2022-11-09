@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace Gongo.EmptyReplacement.Editor
+namespace Squeak.Editor
 {
 
     public static class Language
@@ -31,13 +31,13 @@ namespace Gongo.EmptyReplacement.Editor
             new GUIContent("Copy Rotation", "Copies Rotation from original transform");
     }
     
-    [CustomEditor(typeof(EmptyReplacementMetaContainer))]
+    [CustomEditor(typeof(SqueakReplacementMetaContainer))]
     public class EmptyReplacementMetaContainerEditor : UnityEditor.Editor
     {
-        private EmptyReplacementMetaContainer _container;
+        private SqueakReplacementMetaContainer _container;
         
 
-        [MenuItem("GameObject/Blender Empty Replace", false, -100)]
+        [MenuItem("GameObject/Squeak", false, -100)]
         static void OnSelectObject()
         {
             DoOpen(Selection.activeGameObject);
@@ -52,16 +52,16 @@ namespace Gongo.EmptyReplacement.Editor
                 return;
             }
 
-            if (target.GetComponent<EmptyReplacementMetaContainer>() == null)
+            if (target.GetComponent<SqueakReplacementMetaContainer>() == null)
             {
-                var container = target.AddComponent<EmptyReplacementMetaContainer>();
-                container.meta = EmptyReplacementMeta.Create();
+                var container = target.AddComponent<SqueakReplacementMetaContainer>();
+                container.meta = SqueakReplacementMeta.Create();
             }
 
             Selection.activeGameObject = target;
         }
         
-        public static void AttemptRedo(EmptyReplacementMetaContainer metaContainer)
+        public static void AttemptRedo(SqueakReplacementMetaContainer metaContainer)
         {
             var meta = metaContainer.meta;
             if (meta.ReplacementMode == EmptyReplacementMode.FACE)
@@ -77,10 +77,10 @@ namespace Gongo.EmptyReplacement.Editor
 
         public override void OnInspectorGUI()
         {
-            EditorGUILayout.LabelField("Blender Empty Replacer", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Squeak", EditorStyles.boldLabel);
             if (_container == null)
             {
-                _container = (EmptyReplacementMetaContainer)target;
+                _container = (SqueakReplacementMetaContainer)target;
             }
 
             if (_container.meta == null)
@@ -189,7 +189,7 @@ namespace Gongo.EmptyReplacement.Editor
             }
         }
 
-        private static void DoFaceInstantiates(EmptyReplacementMetaContainer container, Mesh mesh)
+        private static void DoFaceInstantiates(SqueakReplacementMetaContainer container, Mesh mesh)
         {
             var baseTransform = CreateBaseObject(container);
             var triangles = mesh.triangles;
@@ -361,7 +361,7 @@ namespace Gongo.EmptyReplacement.Editor
             FindToReplace(_container);
         }
         
-        private static void FindToReplace(EmptyReplacementMetaContainer container)
+        private static void FindToReplace(SqueakReplacementMetaContainer container)
         {
             //var rootIsPrefab = PrefabUtility.IsPartOfAnyPrefab(_targetObject);
             container.foundToReplace = container.gameObject.GetComponentsInChildren<Transform>(true)
@@ -388,7 +388,7 @@ namespace Gongo.EmptyReplacement.Editor
             container.triedToFind = true;
         }
 
-        private static void CopyTransforms(EmptyReplacementMeta meta, Transform targetTransform, Transform copySource)
+        private static void CopyTransforms(SqueakReplacementMeta meta, Transform targetTransform, Transform copySource)
         {
             targetTransform.localPosition = copySource.localPosition;
                 
@@ -402,7 +402,7 @@ namespace Gongo.EmptyReplacement.Editor
             DoReplacements(_container);
         }
 
-        private static Transform CreateBaseObject(EmptyReplacementMetaContainer container)
+        private static Transform CreateBaseObject(SqueakReplacementMetaContainer container)
         {
             if (container.meta.LastExportedObject != null)
             {
@@ -415,12 +415,12 @@ namespace Gongo.EmptyReplacement.Editor
             var newObjTransform = newObj.transform;
             CopyTransforms(container.meta, newObjTransform, container.transform);
                 
-            newObjTransform.name = container.name + "_EmptyReplace";
+            newObjTransform.name = container.name + "_Squeak";
 
             return newObjTransform;
         }
 
-        private static void DoReplacements(EmptyReplacementMetaContainer container)
+        private static void DoReplacements(SqueakReplacementMetaContainer container)
         {
             var prefabMode = PrefabUtility.IsPartOfAnyPrefab(container.gameObject);
             var transformOrigin = container.transform;
@@ -541,9 +541,9 @@ namespace Gongo.EmptyReplacement.Editor
 
     public class PrefabSelector : EditorWindow
     {
-        private EmptyReplacementMetaContainer _metaContainer;
+        private SqueakReplacementMetaContainer _metaContainer;
 
-        public static void OpenPrefabSelector(EmptyReplacementMetaContainer metaContainer)
+        public static void OpenPrefabSelector(SqueakReplacementMetaContainer metaContainer)
         {
             var window = (PrefabSelector) GetWindow(typeof (PrefabSelector));
             window.autoRepaintOnSceneChange = true;

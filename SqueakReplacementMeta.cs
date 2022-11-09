@@ -2,10 +2,10 @@
 using System;
 using UnityEngine;
 
-namespace Gongo.EmptyReplacement
+namespace Squeak
 {
     [Serializable]
-    public class EmptyReplacementMeta : ScriptableObject
+    public class SqueakReplacementMeta : ScriptableObject
     {
         public EmptyReplacementMode ReplacementMode;
 
@@ -20,14 +20,14 @@ namespace Gongo.EmptyReplacement
         
         public bool CopyName, CopyAngles, CopyScale, HasRedo;
 
-        public EmptyReplacementMeta Clone()
+        public SqueakReplacementMeta Clone()
         {
             return Instantiate(this);
         }
 
-        public static EmptyReplacementMeta Create()
+        public static SqueakReplacementMeta Create()
         {
-            var meta = CreateInstance<EmptyReplacementMeta>();
+            var meta = CreateInstance<SqueakReplacementMeta>();
             meta.CopyName = true;
             meta.CopyAngles = true;
             meta.CopyScale = true;
