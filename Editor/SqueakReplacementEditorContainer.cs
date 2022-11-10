@@ -45,12 +45,6 @@ namespace Squeak.Editor
 
         private static void DoOpen(GameObject target)
         {
-            if (Selection.activeGameObject.transform.parent != null)
-            {
-                EditorUtility.DisplayDialog("Invalid Target",
-                    "Cannot do replacements with an object that isn't at the root of the scene", "Ok");
-                return;
-            }
 
             if (target.GetComponent<SqueakReplacementMetaContainer>() == null)
             {
@@ -407,6 +401,7 @@ namespace Squeak.Editor
             }
 
             var newObj = new GameObject();
+            newObj.transform.parent = container.transform.parent;
                 
             container.meta.LastExportedObject = newObj;
             var newObjTransform = newObj.transform;
