@@ -192,7 +192,6 @@ namespace Squeak.Editor
         private static void DoFaceInstantiates(SqueakReplacementMetaContainer container, Mesh mesh)
         {
             var baseTransform = CreateBaseObject(container);
-            Debug.Log(baseTransform.position + " - " + baseTransform.rotation + " - " + baseTransform.localScale);
             var triangles = mesh.triangles;
             var vertices = mesh.vertices;
             var normals = mesh.normals;
@@ -202,8 +201,6 @@ namespace Squeak.Editor
             trans.position = Vector3.zero;
             trans.rotation = Quaternion.identity;
 
-            Debug.Log(trans.position + " - " + trans.rotation + " - " + trans.localScale);
-            
             var beginTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             var displayedProgress = false;
             var matrix = new Matrix4x4();
@@ -224,7 +221,6 @@ namespace Squeak.Editor
                 combinedNormals.Normalize();
 
                 var facePosition = (vert0 + vert1 + vert2) / 3.0f;
-                Debug.Log("FACE POSITION: " + facePosition);
                 
 
                 if (i % 300 == 0) // modulus must be multiple of 3
